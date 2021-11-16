@@ -1,65 +1,35 @@
-import throttle from "lodash/throttle";
+import { throttle } from "lodash";
 
-const input=document.querySelector('input');
-const textarea=document.querySelector('textarea');
 const form=document.querySelector('form');
+const input=document.querySelector('input[type="email"]')
+const textarea=document.querySelector('textarea[name="message"]')
 const button=document.querySelector('button');
 const LOCALSTORAGE_KEY="feedback-form-state";
-
-const onInput=e=>{
-e.preventDefault();
-const feedback={
-  email: input.value,
-  message: textarea.value
+let email; let message;
+const data={
+  email,
+  message
 }
-localStorage.setItem(LOCALSTORAGE_KEY,JSON.stringify(feedback));
-console.log(localStorage.getItem(LOCALSTORAGE_KEY))
-}
-
-// -----------------------------------------
-
-const onTextarea=e=>{
+const onEnter=e=>{
   e.preventDefault();
-  const feedback={
-    email: input.value,
-    message: textarea.value
+  
+  data.email=input.value;
+  data.message=textarea.value;
+  localStorage.setItem(LOCALSTORAGE_KEY,JSON.stringify(data))
+}
+
+if(JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY))!==null){
+  input.value=JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)).email;
+  textarea.value=JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)).message;
   }
-  localStorage.setItem(LOCALSTORAGE_KEY,JSON.stringify(feedback));
-console.log(localStorage.getItem(LOCALSTORAGE_KEY))
-}
 
-// -----------------------------------------
-
-const check=e=>{
-  localStorage.getItem(LOCALSTORAGE_KEY);
-      try{
-input.value=JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)).email;
-textarea.value=JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)).message; 
-  }catch{
-    console.log('WRONG DATA!')
-  }
-  if(input.value==="" || textarea.value===""){
-console.log('ENTER DATA!')} 
-}
-
-
-
-// ------------------------------------------
-
-const submit=e=>{
-  e.preventDefault();
-// localStorage.removeItem(LOCALSTORAGE_KEY);
-const feedback={
-  email: input.value,
-  message: textarea.value
-}
-console.log(feedback);
-form.reset()
-alert("Nice job, send another one!")
-}
-
-check();
-input.addEventListener('input', throttle(onInput,1000));
-textarea.addEventListener('input', throttle(onTextarea,1000));
-button.addEventListener('click', submit);
+form.addEventListener('input',throttle(onEnter, 600));
+button.addEventListener('click',e=>{
+ if(JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY))!==null){
+   e.preventDefault();
+  console.log(JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY)));
+  localStorage.clear();
+  alert(`Message to: "${input.value}" sent, well done!`);
+  form.reset();
+}else{alert("Insert data, please")}})
 
