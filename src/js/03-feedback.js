@@ -11,7 +11,7 @@ const data={
   message
 }
 const onEnter=e=>{
-  
+  e.preventDefault();
   
   data.email=input.value;
   data.message=textarea.value;
